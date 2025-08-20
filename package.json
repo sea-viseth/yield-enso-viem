@@ -1,0 +1,27 @@
+{
+  "name": "test-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ensofinance/sdk": "^1.1.7",
+    "axios": "^1.11.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "ethers": "^6.15.0",
+    "express": "^5.1.0",
+    "uuid": "^11.1.0",
+    "viem": "^2.34.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

@@ -1,0 +1,5 @@
+module.exports = {
+  EURe_TOKEN_ADDRESS_GNOSIS: '0xcB444e90D8198415266c6a2724b7900fb12FC56E', //EURe token address on Gnosis
+  AEURE_TOKEN_ADDRESS_GNOSIS: '0xEdBC7449a9b594CA4E053D9737EC5Dc4CbCcBfb2',// AEURE token address on Gnosis
+  CHAIN_ID_GNOSIS: 100, // Gnosis chain ID
+};
