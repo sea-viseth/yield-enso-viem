@@ -1,8 +1,8 @@
-const { EnsoClient } = require('@ensofinance/sdk');
-
+const { EnsoClient } = require("@ensofinance/sdk");
+const constant = require("../config/constant.js");
 let ensoClient;
 
-function initEnsoClient(apiKey) {
+function initEnsoClient(apiKey = constant.ENSO_API_KEY) {
   ensoClient = new EnsoClient({ apiKey });
   return ensoClient;
 }
@@ -14,7 +14,7 @@ async function getDepositRoute(
   amount,
   chainId
 ) {
-  if (!ensoClient) throw new Error('Enso not initialized');
+  if (!ensoClient) throw new Error("Enso not initialized");
   try {
     const route = await ensoClient.getRouteData({
       fromAddress,
@@ -22,16 +22,16 @@ async function getDepositRoute(
       amountIn: [amount],
       tokenIn: [tokenIn],
       tokenOut: [tokenOut],
-      routingStrategy: 'router',
+      routingStrategy: "router"
     });
     return route;
   } catch (err) {
-    console.error('Enso error:', err.message);
+    console.error("Enso error:", err.message);
     return null;
   }
 }
 
 module.exports = {
   initEnsoClient,
-  getDepositRoute,
+  getDepositRoute
 };
