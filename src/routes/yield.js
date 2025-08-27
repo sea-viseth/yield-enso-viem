@@ -245,7 +245,7 @@ router.get("/deposit/enso/pol", async (req, res) => {
       args: [WALLET, realSpender]
     });
     console.log("Current allowance:", allowance);
-    // return;
+
     if (allowance < AMOUNT) {
       console.log("🔑 Approving token...");
       // Build data for approve
@@ -273,15 +273,16 @@ router.get("/deposit/enso/pol", async (req, res) => {
     const ensoTx = {
       to: route.tx.to,
       data: route.tx.data,
-      value: route.tx.value ? BigInt(route.tx.value) : 0n
+      value: 0n
+      // value: route.tx.value ? BigInt(route.tx.value) : 0n
     };
-
+    console.log("ensoTx", ensoTx);
     // 4. Estimate gas
     const estimatedGas = await publicClient.estimateGas({
       account,
       to: ensoTx.to,
       data: ensoTx.data,
-      value: BigInt(ensoTx.value || 0)
+      value: ensoTx.value
     });
     console.log("estimatedGas", estimatedGas);
 
@@ -290,7 +291,7 @@ router.get("/deposit/enso/pol", async (req, res) => {
       account,
       to: ensoTx.to,
       data: ensoTx.data,
-      value: BigInt(ensoTx.value || 0),
+      value: ensoTx.value,
       gas: estimatedGas
     });
 
@@ -395,6 +396,41 @@ router.get("/withdraw/enso/pol", async (req, res) => {
   } catch (error) {
     console.error("❌ Deposit error:", error);
     return res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/calculate-gas", async (req, res) => {
+  try {
+    // 2. Get current gas price from network
+    const publicClient = createPublicClient({
+      chain: polygon,
+      transport: http("https://polygon-rpc.com")
+    });
+    const estimatedGas = 1220582n;
+    const gasPrice = await publicClient.getGasPrice();
+    // 3. Calculate total fee: gas units × gas price
+    const feeInWei = estimatedGas * gasPrice;
+    // 4. Convert to readable format (18 decimals for POL/ETH)
+    const feeInNativeToken = Number(feeInWei) / Math.pow(10, 18);
+    console.log({
+      estimatedGas, // e.g., 1220582n
+      gasPrice, // e.g., 278500000000n (278.5 gwei in wei)
+      feeInWei, // e.g., 340020000000000000n (total fee in wei)
+      feeInNativeToken, // e.g., 0.34002 (readable POL amount)
+      gasPriceInGwei: Number(gasPrice) / Math.pow(10, 9) // e.g., 278.5 (readable gwei)
+    });
+
+    const fees = await publicClient.estimateFeesPerGas();
+    const maxFeePerGas = fees.maxFeePerGas; // BigInt (wei)
+    const maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+    const estGas = 1220582n * maxFeePerGas;
+    const toPOL = (x) => Number(x) / 1e18;
+
+    console.log(toPOL(estGas));
+    res.json({ message: "success" });
+  } catch (error) {
+    console.log("❌ Calculate gas error:", error);
+    return res.status(400).json({ error: error.message });
   }
 });
 
